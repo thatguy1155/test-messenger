@@ -17,7 +17,7 @@ router.post("/", async (req, res, next) => {
       senderId,
       recipientId
     );
-    const foundConvoId = conversation.dataValues.id
+    const foundConvoId = conversation.id
     
     //if the belongs to these users, write the message
     if (conversationId && foundConvoId === conversationId) {

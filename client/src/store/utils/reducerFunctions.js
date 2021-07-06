@@ -81,3 +81,16 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     }
   });
 };
+
+export const reorderConversations = (conversations) => {
+  let newConversations = conversations.map((conversation) => {
+    const newConversation = conversation;
+    newConversation.messages = reorderMessages(conversation.messages);
+    return newConversation;
+  })
+  return newConversations;
+}
+
+const reorderMessages = (messages) => {
+  return messages.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt))
+}
