@@ -12,12 +12,10 @@ router.post("/", async (req, res, next) => {
     const senderId = req.user.id;
     const { recipientId, text, conversationId, sender } = req.body;
 
-    //for security reasons, confirm that this conversation exists between the users
-    let conversation = await Conversation.findConversation(
-      senderId,
-      recipientId
-    );
-    const foundConvoId = conversation.id
+    
+    //for security reasons, confirm that this conversation exists for sender
+    let conversation = await Conversation.findConversationByPK(conversationId);
+    const foundConvoId = conversation ? conversation.id : null;
     
     //if the belongs to these users, write the message
     if (conversationId && foundConvoId === conversationId) {
@@ -30,6 +28,12 @@ router.post("/", async (req, res, next) => {
       return res.sendStatus(401);
     }
 
+    //if there's no conversationId, check to see if there's a conversation 
+    //between users.
+    conversation = await Conversation.findConversation(
+      senderId,
+      recipientId
+    );
     if (!conversation) {
       // create conversation
       conversation = await Conversation.create({
