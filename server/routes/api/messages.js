@@ -11,15 +11,14 @@ router.post("/", async (req, res, next) => {
     
     const senderId = req.user.id;
     const { recipientId, text, conversationId, sender } = req.body;
-
-    
+    const read = false;
     //for security reasons, confirm that this conversation exists for sender
     let conversation = await Conversation.findConversationByPK(conversationId);
     const foundConvoId = conversation ? conversation.id : null;
     
     //if the belongs to these users, write the message
     if (conversationId && foundConvoId === conversationId) {
-      const message = await Message.create({ senderId, text, conversationId });
+      const message = await Message.create({ senderId, text, read, conversationId });
       return res.json({ message, sender });
     }
 
@@ -47,6 +46,7 @@ router.post("/", async (req, res, next) => {
     const message = await Message.create({
       senderId,
       text,
+      read,
       conversationId: conversation.id,
     });
     res.json({ message, sender });
