@@ -10,7 +10,8 @@ export const setActiveChat = (username) => {
 const reducer = (state = "", action) => {
   switch (action.type) {
     case SET_ACTIVE_CHAT: {
-      return action.username;
+      const otherUser = action.username
+      return otherUser;
     }
     default:
       return state;
