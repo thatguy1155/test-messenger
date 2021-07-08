@@ -10,14 +10,18 @@ const { User } = require("./db/models");
 // create store for sessions to persist in database
 const sessionStore = new SequelizeStore({ db });
 
+
 const { json, urlencoded } = express;
 
 const app = express();
+app.io = require('socket.io')();
+require('./sockets')(app)
 
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
+
 
 app.use(function (req, res, next) {
   const token = req.headers["x-access-token"];
