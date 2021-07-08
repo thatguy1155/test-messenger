@@ -24,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     height: 20,
     width: 20,
-    marginRight: theme.spacing(),
-    marginTop: theme.spacing()
+    marginRight: theme.spacing,
+    marginTop: theme.spacing
   },
   bubble: {
     background: "#F4F6FA",

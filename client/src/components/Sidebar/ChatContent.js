@@ -21,10 +21,10 @@ const useStyles = makeStyles((theme) => ({
   notification: {
     height: 20,
     width: "100%",
-    paddingLeft:theme.spacing(),
-    paddingRight:theme.spacing(),
+    paddingLeft:theme.spacing,
+    paddingRight:theme.spacing,
     backgroundColor: "#3F92FF",
-    marginRight: theme.spacing(),
+    marginRight: theme.spacing,
     color: "white",
     fontSize: theme.typography,
     letterSpacing: -0.5,
@@ -73,8 +73,6 @@ const ChatContent = (props) => {
         </Typography>
       </Box>
       <Unread />
-      
-      
     </Box>
   );
 };
