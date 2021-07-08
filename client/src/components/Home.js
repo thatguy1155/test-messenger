@@ -16,17 +16,15 @@ const styles = {
 
 const Home = (props) => {
   const {
-    user, conversations, logout, fetchConversations, classes
+    user, conversations, logout, fetchConversations, classes,
   } = props;
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
 
   useEffect(() => {
-    if (this.props.user.id !== prevProps.user.id) {
-      setIsLoggedIn(true);
-    }
-    },[prevProps])
+    setIsLoggedIn(true)
+    // eslint-disable-next-line
+    },[user.id])
 
   useEffect(() => {
     fetchConversations()
@@ -34,20 +32,20 @@ const Home = (props) => {
     },[])
   
 
-  handleLogout = async () => {
+  const handleLogout = async () => {
     await logout(user.id);
   };
- 
-    const { classes } = this.props;
-    if (!this.props.user.id) {
-      // If we were previously logged in, redirect to login instead of register
-      if (isLoggedIn) return <Redirect to="/login" />;
-      return <Redirect to="/register" />;
-    }
+
+  
+  if (!user.id) {
+    // If we were previously logged in, redirect to login instead of register
+    if (isLoggedIn) return <Redirect to="/login" />;
+    return <Redirect to="/register" />;
+  }
   return (
     <>
       {/* logout button will eventually be in a dropdown next to username */}
-      <Button className={classes.logout} onClick={this.handleLogout}>
+      <Button className={classes.logout} onClick={handleLogout}>
         Logout
       </Button>
       <Grid container component="main" className={classes.root}>
@@ -57,6 +55,7 @@ const Home = (props) => {
       </Grid>
     </>
   );
+  
 }
 
 const mapStateToProps = (state) => {
