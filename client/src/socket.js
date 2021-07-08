@@ -9,7 +9,6 @@ import {
 
 
 const socket = io('http://localhost:3001');
-// console.log(window.location.origin);
 
 socket.on("connect", () => {
   console.log("connected to server");
@@ -22,7 +21,7 @@ socket.on("connect", () => {
     store.dispatch(removeOfflineUser(id));
   });
   socket.on("new-message", (data) => {
-    console.log("received shit")
+    console.log("fuck")
     store.dispatch(setNewMessage(data.message, data.sender));
   });
   socket.on("mark-as-read", (data) => {

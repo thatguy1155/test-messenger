@@ -30,6 +30,6 @@ module.exports = (app) => {
         onlineUsers.splice(userIndex, 1);
         socket.broadcast.emit("remove-offline-user", id);
       }
-    });
+    }); 
   });  
 }

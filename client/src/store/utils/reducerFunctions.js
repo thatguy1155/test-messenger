@@ -20,7 +20,6 @@ export const addMessageToStore = (state, payload) => {
       const convoCopy = { ...convo };
       convoCopy.messages.push(message);
       convoCopy.latestMessageText = message.text;
-
       return convoCopy;
     } else {
       return convo;
