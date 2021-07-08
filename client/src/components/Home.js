@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
@@ -16,7 +16,7 @@ const styles = {
 
 const Home = (props) => {
   const {
-    user, conversations, logout, fetchConversations, classes,
+    user, logout, fetchConversations, classes,
   } = props;
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
