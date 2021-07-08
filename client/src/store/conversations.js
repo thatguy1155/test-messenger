@@ -62,11 +62,11 @@ export const clearSearchedUsers = () => {
   };
 };
 
-export const markedAsRead = (data,source) => {
+export const markedAsRead = (convoId,source) => {
   
   return {
     type: MARKED_AS_READ,
-    payload:data,
+    convoId,
     source
   };
 }
@@ -88,7 +88,7 @@ const reducer = (state = [], action) => {
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
     case MARKED_AS_READ: {
-      return updateReadMessagesInStore(state, action.payload, action.source);
+      return updateReadMessagesInStore(state, action.payload, action.convoId, action.source);
     }
     case ADD_ONLINE_USER: {
       return addOnlineUserToStore(state, action.id);

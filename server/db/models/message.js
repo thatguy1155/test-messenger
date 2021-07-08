@@ -18,9 +18,9 @@ const Message = db.define("message", {
 
 Message.readMessages = async function (conversationId) {
   const messages = await Message.update({read:true},{
-    where: { conversationId }
+    where: { conversationId, read:false }
   });
-  if (!messages) throw ('Error while Updating');
+  if (!messages)  return res.sendStatus(204);
   // return conversation or null if it doesn't exist
 };
 

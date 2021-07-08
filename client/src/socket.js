@@ -24,7 +24,7 @@ socket.on("connect", () => {
     store.dispatch(setNewMessage(data.message, data.sender));
   });
   socket.on("mark-as-read", (data) => {
-    store.dispatch(markedAsRead(data,'socket'));
+    store.dispatch(markedAsRead(data.convoToUpdate,'socket'));
   });
 });
 

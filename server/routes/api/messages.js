@@ -55,4 +55,18 @@ router.post("/", async (req, res, next) => {
   }
 });
 
+router.put("/read", async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+    const { id } = req.body;
+    await Message.readMessages(id);
+    const conversation = await Conversation.findConversationByPK(id);
+    return conversation ? res.json({ conversation }) : res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

@@ -122,9 +122,12 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
 export const markAsRead = (body) => async (dispatch) => {
   if(!youCheckedLast(body)){
     try {
-      const { data } = await axios.post("/api/read",body);
-      dispatch(markedAsRead(data,'local'));
-      updateRead(data);
+      const { data } = await axios.put("/api/messages/read",body);
+      if(data){
+        dispatch(markedAsRead(data.conversation.id,'local'));
+        updateRead(data.conversation.id);
+      }
+
     } catch (error) {
       console.error(error);
     }
@@ -137,10 +140,11 @@ own previous messages as read*/
 const youCheckedLast = (body) => {
   const [lastSender] = body.messages.slice(-1);
   const otherUserId = body.otherUser.id;
-  const logic = lastSender.senderId !== otherUserId;
-  return logic;
+  return lastSender.senderId !== otherUserId;
 }
 
 const updateRead = (data) => {
-  socket.emit("mark-as-read", {data});
+  socket.emit("mark-as-read", {
+  convoId:data,
+});
 };

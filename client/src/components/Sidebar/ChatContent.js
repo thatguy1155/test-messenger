@@ -21,12 +21,12 @@ const useStyles = makeStyles((theme) => ({
   notification: {
     height: 20,
     width: "100%",
-    paddingLeft:3,
-    paddingRight:3,
+    paddingLeft:theme.spacing(),
+    paddingRight:theme.spacing(),
     backgroundColor: "#3F92FF",
-    marginRight: 10,
+    marginRight: theme.spacing(),
     color: "white",
-    fontSize: 12,
+    fontSize: theme.typography,
     letterSpacing: -0.5,
     fontWeight: "bold",
     display: "flex",
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     borderRadius: 10,
   },
-  //TODO: center this notifiation vertically
+
   notificationWrapper: {
     height:40,
     width:40,
@@ -50,6 +50,18 @@ const ChatContent = (props) => {
   const { conversation } = props;
   const { latestMessageText, otherUser, unreadByYou } = conversation;
 
+  const Unread = () => {
+    if (unreadByYou) {
+      return (
+      <Box className={classes.notificationWrapper}>
+          <Typography className={classes.notification}>
+            {unreadByYou}
+          </Typography>
+      </Box>
+      );
+    } else return null;
+  }
+
   return (
     <Box className={classes.root}>
       <Box>
@@ -60,13 +72,7 @@ const ChatContent = (props) => {
           {latestMessageText}
         </Typography>
       </Box>
-      {unreadByYou > 0 &&
-        <Box className={classes.notificationWrapper}>
-          <Typography className={classes.notification}>
-            {unreadByYou && unreadByYou}
-          </Typography>
-        </Box>
-      }
+      <Unread />
       
       
     </Box>

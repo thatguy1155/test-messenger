@@ -28,8 +28,7 @@ export const addMessageToStore = (state, payload) => {
   });
 };
 
-export const updateReadMessagesInStore = (state, payload, source) => {
-  const { id } = payload.conversation;
+export const updateReadMessagesInStore = (state, payload, id, source) => {
   return state.map((convo) => {
     if (convo.id === id) {
       const convoCopy = { ...convo };

@@ -5,10 +5,11 @@ export const reorderMessages = (messages) => {
   return messages.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt))
 }
 
-export const unreadByYou = (messages,otherUserId) => messages.filter((message) => {
-  const senderId = message.senderId;
-  return !message.read && senderId === otherUserId; 
-}).length
+
+export const unreadByYou = (messages,otherUserId) => {
+const readIncrement = (message) =>  !message.read && message.senderId === otherUserId ? 1 : 0;
+return messages.reduce((previous, message) => previous + readIncrement(message), 0);
+}
 
 export const lastReadByThem = (messages, otherUserId) => {
   const lastReadId = Math.max.apply(Math, readByOther(messages,otherUserId));
