@@ -1,39 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Redirect } from "react-router-dom";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Grid, CssBaseline, Button } from "@material-ui/core";
 import { SidebarContainer } from "./Sidebar";
 import { ActiveChat } from "./ActiveChat";
 import { logout, fetchConversations } from "../store/utils/thunkCreators";
 import { clearOnLogout } from "../store/index";
 
-const styles = {
+
+const useStyles = makeStyles((theme) => ({
   root: {
     height: "97vh",
   },
-};
+}));
 
-const Home = (props) => {
-  const {
-    user, logout, fetchConversations, classes,
-  } = props;
 
+const Home = () => {
+  const classes = useStyles();
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.user)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     setIsLoggedIn(true)
-    // eslint-disable-next-line
     },[user.id])
 
   useEffect(() => {
-    fetchConversations()
+    dispatch(fetchConversations())
     // eslint-disable-next-line
     },[])
   
 
   const handleLogout = async () => {
-    await logout(user.id);
+    await dispatch(logout(user.id));
+    dispatch(clearOnLogout());
   };
 
   
@@ -58,26 +59,4 @@ const Home = (props) => {
   
 }
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-    conversations: state.conversations,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    logout: (id) => {
-      dispatch(logout(id));
-      dispatch(clearOnLogout());
-    },
-    fetchConversations: () => {
-      dispatch(fetchConversations());
-    },
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withStyles(styles)(Home));
+export default Home;
