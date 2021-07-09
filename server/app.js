@@ -7,6 +7,8 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const db = require("./db");
 const { User } = require("./db/models");
+const io = require('socket.io')();
+
 // create store for sessions to persist in database
 const sessionStore = new SequelizeStore({ db });
 
@@ -14,33 +16,18 @@ const sessionStore = new SequelizeStore({ db });
 const { json, urlencoded } = express;
 
 const app = express();
-io = require('socket.io')();
-require('./sockets')(io)
-//this is just a function. try and move this function in the routes
+
+//set the socket to use in the routes
+io.on('connect', socket => {
+  app.set('socket',socket);
+})
+
 
 
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
-io.use(function(socket, next){
-  const token = socket.handshake.query.token
-  if (token) {
-    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
-      if (err) {
-        console.log('oh no')
-        return next(new Error('Authentication error'));
-      }
-      User.findOne({
-        where: { id: decoded.id },
-      }).then((user) => {
-        return next();
-      });
-    });
-  } else {
-    return next();
-  }   
-})
 
 
 app.use(function (req, res, next) {

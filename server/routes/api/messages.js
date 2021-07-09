@@ -1,11 +1,15 @@
 const router = require("express").Router();
-// const { app } = require("../../app");
+//const { app } = require("../../app");
 const { Conversation, Message } = require("../../db/models");
 const onlineUsers = require("../../onlineUsers");
-const sockets = require('../../sockets.js');
+const { newMessageEmit, setReadEmit } = require('../../sockets')
 
 // expects {recipientId, text, conversationId } in body (conversationId will be null if no conversation exists yet)
 router.post("/", async (req, res, next) => {
+  
+  // get the socket in question
+  const socket = req.app.get('socket')
+
   try {
     if (!req.user) {
       return res.sendStatus(401);
@@ -21,10 +25,7 @@ router.post("/", async (req, res, next) => {
     //if the belongs to these users, write the message
     if (conversationId && foundConvoId === conversationId) {
       const message = await Message.create({ senderId, text, read, conversationId });
-      // app.io.emit("message", {
-      //   message,
-      //   sender,
-      // });
+      newMessageEmit({ socket, message, sender });
       return res.json({ message, sender });
     }
 
@@ -55,6 +56,8 @@ router.post("/", async (req, res, next) => {
       read,
       conversationId: conversation.id,
     });
+    newMessageEmit({ socket, message, sender });
+    
     res.json({ message, sender });
   } catch (error) {
     next(error);
@@ -62,6 +65,7 @@ router.post("/", async (req, res, next) => {
 });
 
 router.put("/read", async (req, res, next) => {
+  const socket = req.app.get('socket')
   try {
     if (!req.user) {
       return res.sendStatus(401);
@@ -69,10 +73,7 @@ router.put("/read", async (req, res, next) => {
     const { id } = req.body;
     await Message.readMessages(id);
     const conversation = await Conversation.findConversationByPK(id);
-    
-    // app.io.emit("read", {
-    //   convoToUpdate:conversation.id
-    // });
+    setReadEmit({ socket, convoToUpdate: conversation.id});
     return conversation ? res.json({ conversation }) : res.sendStatus(204);
   } catch (error) {
     next(error);

@@ -1,8 +1,10 @@
 const router = require("express").Router();
 const { User } = require("../../db/models");
 const jwt = require("jsonwebtoken");
+const { addOnlineUserEmit, removeOnlineUserEmit} = require('../../sockets')
 
 router.post("/register", async (req, res, next) => {
+  const socket = req.app.get('socket')
   try {
     // expects {username, email, password} in req.body
     const { username, password, email } = req.body;
@@ -26,6 +28,7 @@ router.post("/register", async (req, res, next) => {
       process.env.SESSION_SECRET,
       { expiresIn: 86400 }
     );
+    addOnlineUserEmit({ socket, id: user.dataValues.id })
     res.json({
       ...user.dataValues,
       token,
@@ -40,6 +43,7 @@ router.post("/register", async (req, res, next) => {
 });
 
 router.post("/login", async (req, res, next) => {
+  const socket = req.app.get('socket')
   try {
     // expects username and password in req.body
     const { username, password } = req.body;
@@ -64,6 +68,7 @@ router.post("/login", async (req, res, next) => {
         process.env.SESSION_SECRET,
         { expiresIn: 86400 }
       );
+      addOnlineUserEmit({ socket, id: user.dataValues.id })
       res.json({
         ...user.dataValues,
         token,
@@ -75,11 +80,16 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.delete("/logout", (req, res, next) => {
+  const socket = req.app.get('socket')
+  console.log('req: ', req)
+  removeOnlineUserEmit({ socket, id: req.query.id })
   res.sendStatus(204);
 });
 
 router.get("/user", (req, res, next) => {
+  const socket = req.app.get('socket')
   if (req.user) {
+    addOnlineUserEmit({ socket, id:req.user.id })
     return res.json(req.user);
   } else {
     return res.json({});

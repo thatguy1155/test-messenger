@@ -7,7 +7,8 @@ require("dotenv").config();
  * Module dependencies.
  */
 
-const { app, sessionStore, io } = require("../app");
+const { app, sessionStore,io } = require("../app");
+// const io = require('../sockets')
 const http = require("http");
 const db = require("../db");
 const onlineUsers = require("../onlineUsers");
