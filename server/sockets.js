@@ -1,7 +1,9 @@
 const onlineUsers = require("./onlineUsers");
 
 module.exports = (app) => {
+  
   app.io.on("connection", (socket) => {
+    console.log("connected")
     socket.on("go-online", (id) => {
       if (!onlineUsers.includes(id)) {
         onlineUsers.push(id);
@@ -11,7 +13,8 @@ module.exports = (app) => {
     });
   
     socket.on("new-message", (data) => {
-      socket.broadcast.emit("new-message", {
+      console.log('loaded')
+      socket.broadcast.emit("message", {
         message: data.message,
         sender: data.sender,
       });
@@ -19,7 +22,7 @@ module.exports = (app) => {
     });
     
     socket.on("mark-as-read", (data) => {
-      socket.broadcast.emit("mark-as-read", {
+      socket.broadcast.emit("read", {
         convoToUpdate:data.convoId
       });
     });

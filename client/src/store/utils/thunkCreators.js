@@ -16,6 +16,7 @@ axios.interceptors.request.use(async function (config) {
   return config;
 });
 
+
 // USER THUNK CREATORS
 
 export const fetchUser = () => async (dispatch) => {

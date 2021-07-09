@@ -21,6 +21,25 @@ app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
+app.io.use(function(socket, next){
+  const token = socket.handshake.query.token
+  if (token) {
+    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
+      if (err) {
+        console.log('oh no')
+        console.log(token)
+        return next(new Error('Authentication error'));
+      }
+      User.findOne({
+        where: { id: decoded.id },
+      }).then((user) => {
+        return next();
+      });
+    });
+  } else {
+    return next();
+  }   
+})
 
 
 app.use(function (req, res, next) {
