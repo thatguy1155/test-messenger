@@ -25,6 +25,7 @@ socket.on("connect", () => {
     store.dispatch(removeOfflineUser(id));
   });
   socket.on("message", (data) => {
+    console.log("data.messag")
     store.dispatch(setNewMessage(data.message, data.sender));
   });
   socket.on("read", (data) => {

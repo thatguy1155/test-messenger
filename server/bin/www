@@ -7,7 +7,7 @@ require("dotenv").config();
  * Module dependencies.
  */
 
-const { app, sessionStore } = require("../app");
+const { app, sessionStore, io } = require("../app");
 const http = require("http");
 const db = require("../db");
 const onlineUsers = require("../onlineUsers");
@@ -28,7 +28,7 @@ const server = http.createServer(app);
 /**
  * Attach socket calls and set heartbeat
  */
-app.io.attach(server,{'pingInterval': 2000, 'pingTimeout': 50000});
+io.attach(server,{'pingInterval': 2000, 'pingTimeout': 50000});
 
 /**
  * Listen on provided port, on all network interfaces, and sync database.
