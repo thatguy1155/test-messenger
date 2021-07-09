@@ -25,41 +25,15 @@ app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
 io.use(function(socket, next){
   const token = socket.handshake.query.token
-  if (token) {
-    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
-      if (err) {
-        console.log('oh no')
-        return next(new Error('Authentication error'));
-      }
-      User.findOne({
-        where: { id: decoded.id },
-      }).then((user) => {
-        return next();
-      });
-    });
-  } else {
-    return next();
-  }   
+  const req = null;
+  verify({ req, token, next}) 
 })
 
 
 app.use(function (req, res, next) {
   const token = req.headers["x-access-token"];
-  if (token) {
-    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
-      if (err) {
-        return next();
-      }
-      User.findOne({
-        where: { id: decoded.id },
-      }).then((user) => {
-        req.user = user;
-        return next();
-      });
-    });
-  } else {
-    return next();
-  }
+  console.log(token)
+  verify({ req, token, next})
 });
 
 // require api routes here after I create them
@@ -82,5 +56,24 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.json({ error: err });
 });
+
+//verify jwt
+const verify = ({ req, token, next })=> {
+  if (token) {
+    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
+      if (err) {
+        return next();
+      }
+      User.findOne({
+        where: { id: decoded.id },
+      }).then((user) => {
+        if (req) req.user = user;
+        return next();
+      });
+    });
+  } else {
+    return next();
+  }
+}
 
 module.exports = { app, sessionStore,io };
