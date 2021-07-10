@@ -13,7 +13,7 @@ const Message = db.define("message", {
   read: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
-    defaultValue:false,
+    defaultValue: false,
   },
 });
 
@@ -24,7 +24,8 @@ Message.readMessages = async function ({conversationId, userId, res}) {
       senderId: {
         [Sequelize.Op.not]: userId 
       },
-      read:false,  }
+      read: false
+    }
   });
   if (!messages)  return res.sendStatus(204);
   // return conversation or null if it doesn't exist
