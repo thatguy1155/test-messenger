@@ -60,12 +60,16 @@ router.post("/", async (req, res, next) => {
 
 router.put("/read", async (req, res, next) => {
   try {
-    if (!req.user) {
+    const userId = req.user.dataValues.id;
+    const { id } = req.body;
+    const convoMatch = id && await Conversation.findConversationByPK(id);
+    const inConvo = convoMatch.dataValues.user1Id === userId || convoMatch.dataValues.user2Id === userId
+    if (!req.user || !inConvo) {
       return res.sendStatus(401);
     }
-    console.log(req.user)
-    const { id } = req.body;
-    await Message.readMessages(id, res);
+    
+
+    await Message.readMessages({ conversationId:id, userId, res });
     const conversation = await Conversation.findConversationByPK(id);
     return conversation ? res.json({ conversation }) : res.sendStatus(204);
   } catch (error) {

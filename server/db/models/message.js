@@ -17,9 +17,14 @@ const Message = db.define("message", {
   },
 });
 
-Message.readMessages = async function (conversationId, res) {
+Message.readMessages = async function ({conversationId, userId, res}) {
   const messages = await Message.update({read:true},{
-    where: { conversationId, read:false }
+    where: { 
+      conversationId,
+      senderId: {
+        [Sequelize.Op.not]: userId 
+      },
+      read:false,  }
   });
   if (!messages)  return res.sendStatus(204);
   // return conversation or null if it doesn't exist

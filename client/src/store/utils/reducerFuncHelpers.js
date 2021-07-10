@@ -6,12 +6,12 @@ export const reorderMessages = (messages) => {
 }
 
 
-export const unreadByYou = (messages,otherUserId) => {
+export const countUnread = (messages,otherUserId) => {
 const readIncrement = (message) =>  !message.read && message.senderId === otherUserId ? 1 : 0;
 return messages.reduce((previous, message) => previous + readIncrement(message), 0);
 }
 
-export const lastReadByThem = (messages, otherUserId) => {
+export const lastReadByOtherUser = (messages, otherUserId) => {
   const lastReadId = Math.max.apply(Math, readByOther(messages,otherUserId));
   return lastReadId;
 }
