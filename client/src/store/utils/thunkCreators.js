@@ -5,6 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  markedAsRead
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -67,8 +68,6 @@ export const logout = (id) => async (dispatch) => {
   }
 };
 
-// CONVERSATIONS THUNK CREATORS
-
 export const fetchConversations = () => async (dispatch) => {
   try {
     const { data } = await axios.get("/api/conversations");
@@ -90,6 +89,8 @@ const sendMessage = (data, body) => {
     sender: data.sender,
   });
 };
+
+
 
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
@@ -115,4 +116,35 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+// CONVERSATIONS THUNK CREATORS
+export const markAsRead = (body) => async (dispatch) => {
+  if(!youCheckedLast(body)){
+    try {
+      const { data } = await axios.put("/api/messages/read",body);
+      if(data){
+        dispatch(markedAsRead(data.conversation.id,'local'));
+        updateRead(data.conversation.id);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  } 
+}
+
+/* imagine a case where someone writes a message and then
+reopens the chat before the other person has read, don't count your
+own previous messages as read*/
+const youCheckedLast = (body) => {
+  const [lastSender] = body.messages.slice(-1);
+  const otherUserId = body.otherUser.id;
+  return lastSender.senderId !== otherUserId;
+}
+
+const updateRead = (data) => {
+  socket.emit("mark-as-read", {
+  convoId:data,
+});
 };

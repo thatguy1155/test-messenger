@@ -17,6 +17,7 @@ export const theme = createMuiTheme({
       }
     }
   },
+  spacing: [1,2,3,4,5,6,7,8,9,10,11],
   palette: {
     primary: { main: "#3A8DFF" },
     secondary: { main: "#B0B0B0" }

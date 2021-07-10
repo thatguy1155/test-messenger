@@ -4,6 +4,7 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
+  updateReadMessagesInStore,
   reorderConversations,
 } from "./utils/reducerFunctions";
 
@@ -11,6 +12,7 @@ import {
 
 const GET_CONVERSATIONS = "GET_CONVERSATIONS";
 const SET_MESSAGE = "SET_MESSAGE";
+const MARKED_AS_READ = "MARKED_AS_READ";
 const ADD_ONLINE_USER = "ADD_ONLINE_USER";
 const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
@@ -60,6 +62,15 @@ export const clearSearchedUsers = () => {
   };
 };
 
+export const markedAsRead = (convoId,source) => {
+  
+  return {
+    type: MARKED_AS_READ,
+    convoId,
+    source
+  };
+}
+
 // add new conversation when sending a new message
 export const addConversation = (recipientId, newMessage) => {
   return {
@@ -76,6 +87,9 @@ const reducer = (state = [], action) => {
       return reorderConversations(action.conversations);
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
+    case MARKED_AS_READ: {
+      return updateReadMessagesInStore(state, action.payload, action.convoId, action.source);
+    }
     case ADD_ONLINE_USER: {
       return addOnlineUserToStore(state, action.id);
     }

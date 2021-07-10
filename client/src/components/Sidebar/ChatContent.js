@@ -20,11 +20,13 @@ const useStyles = makeStyles((theme) => ({
   },
   notification: {
     height: 20,
-    width: 20,
+    width: "100%",
+    paddingLeft:theme.spacing,
+    paddingRight:theme.spacing,
     backgroundColor: "#3F92FF",
-    marginRight: 10,
+    marginRight: theme.spacing,
     color: "white",
-    fontSize: 10,
+    fontSize: theme.typography,
     letterSpacing: -0.5,
     fontWeight: "bold",
     display: "flex",
@@ -32,13 +34,33 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     borderRadius: 10,
   },
+
+  notificationWrapper: {
+    height:40,
+    width:40,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }
 }));
 
 const ChatContent = (props) => {
   const classes = useStyles();
 
   const { conversation } = props;
-  const { latestMessageText, otherUser } = conversation;
+  const { latestMessageText, otherUser, unreadByYou } = conversation;
+
+  const Unread = () => {
+    if (unreadByYou) {
+      return (
+      <Box className={classes.notificationWrapper}>
+          <Typography className={classes.notification}>
+            {unreadByYou}
+          </Typography>
+      </Box>
+      );
+    } else return null;
+  }
 
   return (
     <Box className={classes.root}>
@@ -50,6 +72,7 @@ const ChatContent = (props) => {
           {latestMessageText}
         </Typography>
       </Box>
+      <Unread />
     </Box>
   );
 };
