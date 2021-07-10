@@ -32,7 +32,6 @@ io.use(function(socket, next){
 
 app.use(function (req, res, next) {
   const token = req.headers["x-access-token"];
-  console.log(token)
   verify({ req, token, next})
 });
 
