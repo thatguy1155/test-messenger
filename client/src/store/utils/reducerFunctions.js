@@ -1,5 +1,5 @@
 import {
-  reorderMessages, unreadByYou, lastReadByThem, setMessageToRead
+  reorderMessages, countUnread, lastReadByOtherUser, setMessageToRead
 } from './reducerFuncHelpers';
 
 export const addMessageToStore = (state, payload) => {
@@ -18,9 +18,10 @@ export const addMessageToStore = (state, payload) => {
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
       const convoCopy = { ...convo };
+      const otherUserId = convo.otherUser.id;
       convoCopy.messages.push(message);
       convoCopy.latestMessageText = message.text;
-
+      convoCopy.lastReadByOtherUser = lastReadByOtherUser(convo.messages,otherUserId)
       return convoCopy;
     } else {
       return convo;
@@ -34,8 +35,8 @@ export const updateReadMessagesInStore = (state, payload, id, source) => {
       const convoCopy = { ...convo };
       const otherUserId = convo.otherUser.id;
       convoCopy.messages = setMessageToRead(convo.messages);
-      if(source === 'local') convoCopy.unreadByYou = 0; 
-      if(source === 'socket') convoCopy.lastReadByThem = lastReadByThem(convo.messages,otherUserId)
+      if(source === 'local') convoCopy.unread = 0; 
+      if(source === 'socket') convoCopy.lastReadByOtherUser = lastReadByOtherUser(convo.messages,otherUserId)
       return convoCopy;
     } else {
       return convo;
@@ -108,8 +109,8 @@ export const reorderConversations = (conversations) => {
     const newConversation = conversation;
     const otherUserId = conversation.otherUser.id;
     newConversation.messages = reorderMessages(conversation.messages);
-    newConversation.unreadByYou = unreadByYou(newConversation.messages,otherUserId);
-    newConversation.lastReadByThem = lastReadByThem(newConversation.messages,otherUserId)
+    newConversation.unread = countUnread(newConversation.messages,otherUserId);
+    newConversation.lastReadByOtherUser = lastReadByOtherUser(newConversation.messages,otherUserId)
     return newConversation;
   })
   return newConversations;

@@ -8,12 +8,14 @@ router.post("/", async (req, res, next) => {
     if (!req.user) {
       return res.sendStatus(401);
     }
-    
     const senderId = req.user.id;
     const { recipientId, text, conversationId, sender } = req.body;
-    const read = false;
+
+    //if user isn't online, set message as initually unread
+    let read = onlineUsers.includes(recipientId);
+    
     //for security reasons, confirm that this conversation exists for sender
-    let conversation = await Conversation.findConversationByPK(conversationId);
+    let conversation = conversationId && await Conversation.findConversationByPK(conversationId);
     const foundConvoId = conversation ? conversation.id : null;
     
     //if the belongs to these users, write the message
@@ -41,6 +43,7 @@ router.post("/", async (req, res, next) => {
       });
       if (onlineUsers.includes(sender.id)) {
         sender.online = true;
+        read = true;
       }
     }
     const message = await Message.create({
@@ -57,11 +60,16 @@ router.post("/", async (req, res, next) => {
 
 router.put("/read", async (req, res, next) => {
   try {
-    if (!req.user) {
+    const userId = req.user.dataValues.id;
+    const { id } = req.body;
+    const convoMatch = id && await Conversation.findConversationByPK(id);
+    const inConvo = convoMatch.dataValues.user1Id === userId || convoMatch.dataValues.user2Id === userId
+    if (!req.user || !inConvo) {
       return res.sendStatus(401);
     }
-    const { id } = req.body;
-    await Message.readMessages(id);
+    
+
+    await Message.readMessages({ conversationId:id, userId, res });
     const conversation = await Conversation.findConversationByPK(id);
     return conversation ? res.json({ conversation }) : res.sendStatus(204);
   } catch (error) {

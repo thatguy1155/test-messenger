@@ -2,6 +2,7 @@ import React from "react";
 import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
+import { markAsRead } from "../../store/utils/thunkCreators";
 import { setActiveChat } from "../../store/activeConversation";
 import { useDispatch } from "react-redux";
 
@@ -26,6 +27,7 @@ const Chat = (props) => {
 
   const handleClick = async (conversation) => {
     dispatch(setActiveChat(conversation.otherUser.username));
+    dispatch(markAsRead(conversation))
   };
 
   
