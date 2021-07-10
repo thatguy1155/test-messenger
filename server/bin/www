@@ -45,6 +45,13 @@ io.on("connection", (socket) => {
       message: data.message,
       sender: data.sender,
     });
+
+  });
+  
+  socket.on("mark-as-read", (data) => {
+    socket.broadcast.emit("mark-as-read", {
+      convoToUpdate:data.convoId
+    });
   });
 
   socket.on("logout", (id) => {

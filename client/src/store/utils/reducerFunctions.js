@@ -1,3 +1,7 @@
+import {
+  reorderMessages, unreadByYou, lastReadByThem, setMessageToRead
+} from './reducerFuncHelpers';
+
 export const addMessageToStore = (state, payload) => {
   const { message, sender } = payload;
   // if sender isn't null, that means the message needs to be put in a brand new convo
@@ -23,6 +27,23 @@ export const addMessageToStore = (state, payload) => {
     }
   });
 };
+
+export const updateReadMessagesInStore = (state, payload, id, source) => {
+  return state.map((convo) => {
+    if (convo.id === id) {
+      const convoCopy = { ...convo };
+      const otherUserId = convo.otherUser.id;
+      convoCopy.messages = setMessageToRead(convo.messages);
+      if(source === 'local') convoCopy.unreadByYou = 0; 
+      if(source === 'socket') convoCopy.lastReadByThem = lastReadByThem(convo.messages,otherUserId)
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  });
+};
+
+
 
 export const addOnlineUserToStore = (state, id) => {
   return state.map((convo) => {
@@ -85,12 +106,11 @@ export const addNewConvoToStore = (state, recipientId, message) => {
 export const reorderConversations = (conversations) => {
   let newConversations = conversations.map((conversation) => {
     const newConversation = conversation;
+    const otherUserId = conversation.otherUser.id;
     newConversation.messages = reorderMessages(conversation.messages);
+    newConversation.unreadByYou = unreadByYou(newConversation.messages,otherUserId);
+    newConversation.lastReadByThem = lastReadByThem(newConversation.messages,otherUserId)
     return newConversation;
   })
   return newConversations;
-}
-
-const reorderMessages = (messages) => {
-  return messages.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt))
 }
