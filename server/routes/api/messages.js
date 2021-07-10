@@ -63,6 +63,9 @@ router.put("/read", async (req, res, next) => {
     const userId = req.user.dataValues.id;
     const { id } = req.body;
     const convoMatch = id && await Conversation.findConversationByPK(id);
+    if (!convoMatch){
+      return res.sendStatus(204);
+    }
     const inConvo = convoMatch.dataValues.user1Id === userId || convoMatch.dataValues.user2Id === userId
     if (!req.user || !inConvo) {
       return res.sendStatus(401);
