@@ -13,10 +13,11 @@ const Message = db.define("message", {
   read: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
+    defaultValue:false,
   },
 });
 
-Message.readMessages = async function (conversationId) {
+Message.readMessages = async function (conversationId, res) {
   const messages = await Message.update({read:true},{
     where: { conversationId, read:false }
   });

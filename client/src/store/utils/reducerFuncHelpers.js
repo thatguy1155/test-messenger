@@ -18,6 +18,7 @@ export const lastReadByThem = (messages, otherUserId) => {
 
 const readByOther = (messages,otherUserId) => messages.map((message) => {
   const senderId = message.senderId;
+  // console.log(senderId, otherUserId)
   const readByOtherUser = message.read && senderId !== otherUserId;
   return readByOtherUser ? message.id : -1;
 })

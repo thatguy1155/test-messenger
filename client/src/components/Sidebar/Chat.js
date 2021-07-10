@@ -30,6 +30,7 @@ const Chat = (props) => {
 
   
   const otherUser = conversation.otherUser;
+  console.log(conversation)
   return (
     <Box
       onClick={() => handleClick(conversation)}
