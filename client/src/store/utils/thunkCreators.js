@@ -106,25 +106,15 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
 
 // CONVERSATIONS THUNK CREATORS
 export const markAsRead = (body) => async (dispatch) => {
-  if(!youCheckedLast(body)){
-    try {
-      const { data } = await axios.put("/api/messages/read",body);
-      if(data){
-        dispatch(markedAsRead(data.conversation.id,'local'));
-      }
-
-    } catch (error) {
-      console.error(error);
+  try {
+    const { data } = await axios.put("/api/messages/read",body);
+    if(data){
+      dispatch(markedAsRead(data.conversation.id,'local'));
     }
+
+  } catch (error) {
+    console.error(error);
   } 
 }
 
-/* imagine a case where someone writes a message and then
-reopens the chat before the other person has read, don't count your
-own previous messages as read*/
-const youCheckedLast = (body) => {
-  const [lastSender] = body.messages.slice(-1);
-  const otherUserId = body.otherUser.id;
-  return lastSender.senderId !== otherUserId;
-}
 
