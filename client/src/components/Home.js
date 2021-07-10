@@ -18,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Home = () => {
   const classes = useStyles();
-  const dispatch = useDispatch()
-  const user = useSelector((state) => state.user)
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -27,8 +27,8 @@ const Home = () => {
     },[user.id])
 
   useEffect(() => {
-    dispatch(fetchConversations())
-    // eslint-disable-next-line
+    dispatch(fetchConversations());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
   
 

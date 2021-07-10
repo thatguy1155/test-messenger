@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 const Chat = (props) => {
   const classes = useStyles();
   const { conversation } = props;
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleClick = async (conversation) => {
     dispatch(setActiveChat(conversation.otherUser.username));
