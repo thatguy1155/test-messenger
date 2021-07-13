@@ -15,7 +15,6 @@ const { json, urlencoded } = express;
 
 const app = express();
 io = require('socket.io')();
-require('./sockets')(io)
 //this is just a function. try and move this function in the routes
 
 
@@ -23,10 +22,13 @@ app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
-io.use(function(socket, next){
+io.use(async function(socket, next){
   const token = socket.handshake.query.token
-  const req = null;
-  verify({ req, token, next}) 
+  let req = {};
+  await verify({ token, req, next}) 
+  const user = req.user;
+  const userId = user['dataValues'].id;
+  require('./sockets')(io,userId);
 })
 
 
@@ -56,20 +58,41 @@ app.use(function (err, req, res, next) {
   res.json({ error: err });
 });
 
+
+// //verify jwt
+// const verify2 = async ({ token, next }) => {
+//   if (token) {
+//     const shit  jwt.verify(token, process.env.SESSION_SECRET, async (err, decoded) => {
+//       if (err) {
+//         return next();
+//       }
+//       const foundUser = await User.findOne({
+//         where: { id: decoded.id },
+//       })
+//         return foundUser;
+      
+//     });
+
+//   } else {
+//     return next();
+//   }
+// }
+
+
 //verify jwt
-const verify = ({ req, token, next })=> {
+const verify = async ({ token, req, next }) => {
   if (token) {
-    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
+    const verified = jwt.verify(token, process.env.SESSION_SECRET, async (err, decoded) => {
       if (err) {
         return next();
       }
-      User.findOne({
+      const user = await User.findOne({
         where: { id: decoded.id },
-      }).then((user) => {
-        if (req) req.user = user;
-        return next();
-      });
+      })
+      req.user = user;
+      return next();
     });
+    return verified;
   } else {
     return next();
   }

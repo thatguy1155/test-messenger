@@ -7,11 +7,12 @@ const onlineUsers = require("../../onlineUsers");
 // include other user model so we have info on username/profile pic (don't include current user info)
 // TODO: for scalability, implement lazy loading
 router.get("/", async (req, res, next) => {
+  const user = await req.user;
   try {
-    if (!req.user) {
+    if (!user) {
       return res.sendStatus(401);
     }
-    const userId = req.user.id;
+    const userId = user.id;
     const conversations = await Conversation.findAll({
       where: {
         [Op.or]: {
