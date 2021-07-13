@@ -15,7 +15,6 @@ const { json, urlencoded } = express;
 
 const app = express();
 io = require('socket.io')();
-//this is just a function. try and move this function in the routes
 
 
 app.use(logger("dev"));
@@ -57,26 +56,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.json({ error: err });
 });
-
-
-// //verify jwt
-// const verify2 = async ({ token, next }) => {
-//   if (token) {
-//     const shit  jwt.verify(token, process.env.SESSION_SECRET, async (err, decoded) => {
-//       if (err) {
-//         return next();
-//       }
-//       const foundUser = await User.findOne({
-//         where: { id: decoded.id },
-//       })
-//         return foundUser;
-      
-//     });
-
-//   } else {
-//     return next();
-//   }
-// }
 
 
 //verify jwt
