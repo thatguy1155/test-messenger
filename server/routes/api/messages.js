@@ -1,7 +1,7 @@
 const router = require("express").Router();
 // const { app } = require("../../app");
 const { Conversation, Message } = require("../../db/models");
-const onlineUsers = require("../../onlineUsers");
+const OnlineUsers = require("../../onlineUsers");
 
 // expects {recipientId, text, conversationId } in body (conversationId will be null if no conversation exists yet)
 router.post("/", async (req, res, next) => {
@@ -14,7 +14,7 @@ router.post("/", async (req, res, next) => {
     const { recipientId, text, conversationId, sender } = req.body;
 
     //if user isn't online, set message as initually unread
-    let read = onlineUsers.includes(recipientId);
+    let read = OnlineUsers.contains(recipientId);
     
     //for security reasons, confirm that this conversation exists for sender
     let conversation = conversationId && await Conversation.findConversationByPK(conversationId);
@@ -43,7 +43,7 @@ router.post("/", async (req, res, next) => {
         user1Id: senderId,
         user2Id: recipientId,
       });
-      if (onlineUsers.includes(sender.id)) {
+      if (OnlineUsers.contains(sender.id)) {
         sender.online = true;
         read = true;
       }
