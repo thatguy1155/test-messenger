@@ -5,7 +5,7 @@ module.exports = (io,userId) => {
   let clients = {}
   
   io.on("connection", (socket) => {
-    if (!socket.id) {
+    if (!userId) {
       socket.disconnect(true)
     } else {
       clients[userId] = socket.id;
