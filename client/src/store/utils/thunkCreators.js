@@ -125,7 +125,7 @@ export const markAsRead = (body) => async (dispatch) => {
     const { data } = await axios.put("/api/messages/read",body);
     if(data){
       dispatch(markedAsRead(data.conversation.id,'local'));
-      updateRead(data.conversation.id);
+      updateRead(data.conversation.id, body.otherUser.id);
     }
 
   } catch (error) {
@@ -134,8 +134,9 @@ export const markAsRead = (body) => async (dispatch) => {
 }
 
 
-const updateRead = (data) => {
+const updateRead = (convoId,otherUserId) => {
   socket.emit("mark-as-read", {
-  convoId:data,
+  convoId,
+  otherUserId
 });
 };
