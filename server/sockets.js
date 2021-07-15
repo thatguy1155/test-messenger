@@ -1,4 +1,4 @@
-const OnlineUsers = require("./onlineUsers");
+const onlineUsers = require("./onlineUsers");
 const { Conversation } = require("./db/models");
 
 module.exports = (io,userId) => {
@@ -8,7 +8,7 @@ module.exports = (io,userId) => {
     clients[userId] = socket.id;
 
     socket.on("go-online", (id) => {
-      !OnlineUsers.contains(id) && OnlineUsers.insert(id)
+      if(!onlineUsers[id]) onlineUsers[id] = id;
       socket.broadcast.emit("add-online-user", id);
     });
   
@@ -28,7 +28,7 @@ module.exports = (io,userId) => {
     });
   
     socket.on("logout", (id) => {
-      OnlineUsers.contains(id) && OnlineUsers.remove(id);
+      if(onlineUsers[id]) delete onlineUsers[id];
       socket.broadcast.emit("remove-offline-user", id);
 
     socket.on('disconnect', function() {
@@ -54,6 +54,8 @@ module.exports = (io,userId) => {
         }
     }
   } 
+
+  
 }
 
 

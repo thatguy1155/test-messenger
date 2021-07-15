@@ -6,7 +6,6 @@ import {
   addOnlineUser,
   markedAsRead
 } from "./store/conversations";
-// 'http://localhost:3001'
 const token = localStorage.getItem("messenger-token");
 const socket = io.connect(process.env.REACT_APP_BACKEND_SERVER, {
   query: {token}
