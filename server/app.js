@@ -10,29 +10,31 @@ const { User } = require("./db/models");
 // create store for sessions to persist in database
 const sessionStore = new SequelizeStore({ db });
 
+
 const { json, urlencoded } = express;
 
 const app = express();
+io = require('socket.io')();
+
 
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
+io.use(async function(socket, next){
+  const token = socket.handshake.query.token
+  const verifiedUser = await verify(token) 
+  const userId = verifiedUser && verifiedUser['dataValues'].id;
+  require('./sockets')(io,userId);
+})
 
-app.use(function (req, res, next) {
+
+app.use(async function (req, res, next) {
   const token = req.headers["x-access-token"];
-  if (token) {
-    jwt.verify(token, process.env.SESSION_SECRET, (err, decoded) => {
-      if (err) {
-        return next();
-      }
-      User.findOne({
-        where: { id: decoded.id },
-      }).then((user) => {
-        req.user = user;
-        return next();
-      });
-    });
+  const verifiedUser = token && await verify(token);
+  if (verifiedUser) {
+    req.user = verifiedUser;
+    return next();
   } else {
     return next();
   }
@@ -59,4 +61,16 @@ app.use(function (err, req, res, next) {
   res.json({ error: err });
 });
 
-module.exports = { app, sessionStore };
+
+//verify jwt
+const verify = async (token) => jwt.verify(token, process.env.SESSION_SECRET, async (err, decoded) => {
+      if (err) {
+        return null;
+      }
+      const user = await User.findOne({
+        where: { id: decoded.id },
+      })
+      return user;
+    });
+
+module.exports = { app, sessionStore,io };
