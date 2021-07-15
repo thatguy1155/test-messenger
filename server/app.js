@@ -23,17 +23,21 @@ app.use(urlencoded({ extended: false }));
 app.use(express.static(join(__dirname, "public")));
 io.use(async function(socket, next){
   const token = socket.handshake.query.token
-  let req = {};
-  await verify({ token, req, next}) 
-  const user = req.user;
-  const userId = user['dataValues'].id;
+  const verifiedUser = await verify(token) 
+  const userId = verifiedUser && verifiedUser['dataValues'].id;
   require('./sockets')(io,userId);
 })
 
 
-app.use(function (req, res, next) {
+app.use(async function (req, res, next) {
   const token = req.headers["x-access-token"];
-  verify({ req, token, next})
+  const verifiedUser = token && await verify(token);
+  if (verifiedUser) {
+    req.user = verifiedUser;
+    return next();
+  } else {
+    return next();
+  }
 });
 
 // require api routes here after I create them
@@ -59,22 +63,14 @@ app.use(function (err, req, res, next) {
 
 
 //verify jwt
-const verify = async ({ token, req, next }) => {
-  if (token) {
-    const verified = jwt.verify(token, process.env.SESSION_SECRET, async (err, decoded) => {
+const verify = async (token) => jwt.verify(token, process.env.SESSION_SECRET, async (err, decoded) => {
       if (err) {
-        return next();
+        return null;
       }
       const user = await User.findOne({
         where: { id: decoded.id },
       })
-      req.user = user;
-      return next();
+      return user;
     });
-    return verified;
-  } else {
-    return next();
-  }
-}
 
 module.exports = { app, sessionStore,io };
