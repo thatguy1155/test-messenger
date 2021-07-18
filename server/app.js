@@ -26,6 +26,7 @@ io.use(async function(socket, next){
   const verifiedUser = await verify(token) 
   const userId = verifiedUser && verifiedUser['dataValues'].id;
   require('./sockets')(io,userId);
+  return next();
 })
 
 

@@ -5,8 +5,8 @@ module.exports = (io,userId) => {
   let clients = {}
   
   io.on("connection", (socket) => {
-    userId ? clients[userId] = socket.id : socket.disconnect(true);
-    
+    userId && !clients[userId] ? clients[userId] = socket.id : socket.disconnect(true);
+
     socket.on("go-online", (id) => {
       if(!onlineUsers[id]) onlineUsers[id] = id;
       socket.broadcast.emit("add-online-user", id);
