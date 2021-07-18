@@ -32,12 +32,8 @@ io.use(async function(socket, next){
 app.use(async function (req, res, next) {
   const token = req.headers["x-access-token"];
   const verifiedUser = token && await verify(token);
-  if (verifiedUser) {
-    req.user = verifiedUser;
-    return next();
-  } else {
-    return next();
-  }
+  if (verifiedUser) req.user = verifiedUser;
+  return next();
 });
 
 // require api routes here after I create them
